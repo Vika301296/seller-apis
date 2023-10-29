@@ -12,7 +12,29 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(last_id, client_id, seller_token):
-    """Получить список товаров магазина озон"""
+    """
+    Получить список товаров магазина Озон.
+
+    Args:
+        last_id (str): Идентификатор последнего полученного товара.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Returns:
+        list: Список товаров.
+
+    Raises:
+        requests.exceptions.HTTPError: Если во время запроса
+        возникает ошибка HTTP.
+
+    Examples:
+        >>> get_product_list("last123", "client123", "token123")
+        >>>     [{'item': 'product123', 'price': 100.0},
+        {'item': 'product124', 'price': 150.0}]
+
+        >>> get_product_list(123, "client123", "token123")
+        # Вы можете увидеть ошибку BadRequest в терминале.
+    """
     url = "https://api-seller.ozon.ru/v2/product/list"
     headers = {
         "Client-Id": client_id,
@@ -32,7 +54,27 @@ def get_product_list(last_id, client_id, seller_token):
 
 
 def get_offer_ids(client_id, seller_token):
-    """Получить артикулы товаров магазина озон"""
+    """
+    Получить артикулы товаров магазина Озон.
+
+    Args:
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Returns:
+        list: Список артикулов товаров.
+
+    Raises:
+        requests.exceptions.HTTPError: Если во время запроса
+        возникает ошибка HTTP.
+
+    Examples:
+        >>> get_offer_ids("client123", "token123")
+        ['offer123', 'offer124']
+
+        >>> get_offer_ids("client123", 123)
+        TypeError: expected string or bytes-like object
+    """
     last_id = ""
     product_list = []
     while True:
@@ -49,7 +91,28 @@ def get_offer_ids(client_id, seller_token):
 
 
 def update_price(prices: list, client_id, seller_token):
-    """Обновить цены товаров"""
+    """
+    Обновить цены товаров.
+
+    Args:
+        prices (list): Список цен товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Returns:
+        dict: Результат операции.
+
+    Raises:
+        requests.exceptions.HTTPError: Если во время запроса
+        возникает ошибка HTTP.
+
+    Examples:
+        >>> update_price([{"price": "5990", "offer_id": "123"}],
+        >>>     "client123", "token123")
+
+        >>> update_price("5990", "client123", "token123")
+        # Вы можете увидеть ошибку BadRequest в терминале.
+    """
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
     headers = {
         "Client-Id": client_id,
@@ -62,7 +125,29 @@ def update_price(prices: list, client_id, seller_token):
 
 
 def update_stocks(stocks: list, client_id, seller_token):
-    """Обновить остатки"""
+    """
+    Обновить остатки товаров.
+
+    Args:
+        stocks (list): Список остатков товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Returns:
+        dict: Результат операции.
+
+    Raises:
+        requests.exceptions.HTTPError: Если во время запроса
+        возникает ошибка HTTP.
+
+    Examples:
+        >>> update_price([{"price": "5990", "offer_id": "123"}],
+        >>>     "client123", "token123")
+        {'result': 'success'}
+
+        >>> update_price("5990", "client123", "token123")
+        TypeError: expected list
+    """
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
     headers = {
         "Client-Id": client_id,
@@ -75,7 +160,23 @@ def update_stocks(stocks: list, client_id, seller_token):
 
 
 def download_stock():
-    """Скачать файл ostatki с сайта casio"""
+    """Скачать файл остатков с сайта Casio.
+
+    Returns:
+        list: Список остатков часов.
+
+    Raises:
+        requests.exceptions.HTTPError: Если во время запроса
+        возникает ошибка HTTP.
+
+    Examples:
+        >>> download_stock()
+        [{'item': 'watch123', 'quantity': 50},
+        {'item': 'watch124', 'quantity': 30}]
+
+        >>> download_stock("https://invalidurl.com")
+        # Вы можете увидеть ошибку BadRequest в терминале.
+    """
     # Скачать остатки с сайта
     casio_url = "https://timeworld.ru/upload/files/ostatki.zip"
     session = requests.Session()
@@ -96,6 +197,29 @@ def download_stock():
 
 
 def create_stocks(watch_remnants, offer_ids):
+    """
+    Создать список остатков товаров.
+
+    Args:
+        watch_remnants (list): Список остатков товаров.
+        offer_ids (list): Список артикулов товаров.
+
+    Returns:
+        list: Список остатков товаров.
+
+    Examples:
+        >>> create_stocks([{"Код": "123", "Количество": ">10"},
+        >>>     {"Код": "456", "Количество": "1"}],["123", "789"])
+        >>>     [{'offer_id': '123', 'stock': 100},
+        >>>     {'offer_id': '456', 'stock': 0},
+        {'offer_id': '789', 'stock': 0}]
+
+        >>> create_stocks(
+        >>>     [{"Код": "123", "Количество": ">10"},
+        >>>     {"Код": "456", "Kоличество": "1"}], "invalid")
+        TypeError: expected list
+
+    """
     # Уберем то, что не загружено в seller
     stocks = []
     for watch in watch_remnants:
@@ -116,6 +240,33 @@ def create_stocks(watch_remnants, offer_ids):
 
 
 def create_prices(watch_remnants, offer_ids):
+    """
+    Создать список цен товаров.
+
+    Args:
+        watch_remnants (list): Список остатков товаров.
+        offer_ids (list): Список артикулов товаров.
+
+    Returns:
+        list: Список цен товаров.
+
+    Examples:
+        >>> create_prices(
+        >>>     [{"Код": "123", "Цена": "5'990.00 руб."},
+        >>>     {"Код": "456", "Цена": "7'500.50 руб."}], ["123", "789"]
+        >>> )
+        [{
+            'auto_action_enabled': 'UNKNOWN', 'currency_code': 'RUB',
+            'offer_id': '123', 'old_price': '0', 'price': '5990'},
+        {'auto_action_enabled': 'UNKNOWN', 'currency_code': 'RUB',
+         'offer_id': '456', 'old_price': '0', 'price': '7500'}]
+
+        >>> create_prices(
+        >>>     [{"Код": "123", "Цена": "5'990.00 руб."}, {"Код": "456",
+        >>>       "Price": "7'500.50 руб."}], "invalid"
+        >>> )
+        # TypeError: expected list
+    """
     prices = []
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
@@ -131,17 +282,82 @@ def create_prices(watch_remnants, offer_ids):
 
 
 def price_conversion(price: str) -> str:
-    """Преобразовать цену. Пример: 5'990.00 руб. -> 5990"""
+    """
+    Преобразовать цену. Пример: 5'990.00 руб. -> 5990
+
+    Выполняет преобразование строки, представляющей цену товара, из одного
+    формата в другой.
+
+    Args:
+        price (str): цена в формате строки
+    Returns:
+        str: значение в виде строки, представляющей цену товара без
+        лишних символов
+    Examples:
+        Если на вход подается строка "5'990.00 руб.", функция вернет "5990",
+        что представляет собой цену товара без знака "руб."
+        и разделителя апострофа.
+        >>> price_conversion("5'990.00 руб.")
+        "5990"
+        >>> price_conversion(5990.00)
+        TypeError: expected string or bytes-like object
+    """
+
     return re.sub("[^0-9]", "", price.split(".")[0])
 
 
 def divide(lst: list, n: int):
-    """Разделить список lst на части по n элементов"""
+    """
+    Разделить список на части по заданному количеству элементов.
+
+    Args:
+        lst (list): Список элементов.
+        n (int): Размер части списка.
+
+    Yields:
+        list: Список элементов, разделенный на части.
+
+    Examples:
+    >>> list(divide([1, 2, 3, 4, 5], 2)
+    [[1, 2], [3, 4], [5]]
+
+    >>> list(divide([1, 2, 3, 4, 5], "invalid")
+    TypeError: expected list
+    """
     for i in range(0, len(lst), n):
-        yield lst[i : i + n]
+        yield lst[i: i + n]
 
 
 async def upload_prices(watch_remnants, client_id, seller_token):
+    """Загрузить цены товаров на маркетплейс "Ozon".
+
+    Args:
+        watch_remnants (list[dict]): Список остатков часов
+        с информацией о ценах.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Returns:
+        list: Список цен товаров с указанием валюты,
+        загруженных на маркетплейс.
+
+    Examples:
+        >>> upload_prices(
+        >>>     [{"Код": "123", "Цена": "5'990.00 руб."},
+        >>>      {"Код": "456", "Цена": "7'500.50 руб."}],
+        >>>     "client123", "token456"
+        >>> )
+        [{'auto_action_enabled': 'UNKNOWN', 'currency_code': 'RUB',
+          'offer_id': '123', 'old_price': '0', 'price': '5990'},
+         {'auto_action_enabled': 'UNKNOWN', 'currency_code': 'RUB',
+          'offer_id': '456', 'old_price': '0', 'price': '7500'}]
+
+        >>> await upload_prices(
+        >>>     [{"Код": "123", "Price": "5'990.00 руб."},
+        >>>      {"Code": "456", "Price": "7'500.50 руб."}], 123, 456
+        >>> )
+        # Вы можете увидеть ошибку BadRequest в терминале.
+    """
     offer_ids = get_offer_ids(client_id, seller_token)
     prices = create_prices(watch_remnants, offer_ids)
     for some_price in list(divide(prices, 1000)):
@@ -150,6 +366,40 @@ async def upload_prices(watch_remnants, client_id, seller_token):
 
 
 async def upload_stocks(watch_remnants, client_id, seller_token):
+    """
+    Загрузить остатки товаров на платформу Озон.
+
+    Args:
+        watch_remnants (list): Список остатков товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен продавца.
+
+    Returns:
+        tuple: Две части - не пустые остатки и все остатки.
+
+    Examples:
+        >>> upload_stocks(
+        >>>     [{"Код": "123", "Количество": "5"},
+        >>>      {"Код": "456", "Количество": ">10"}],
+        >>>      "client123",
+        >>>      "token456"
+        >>> )
+        ([
+            {'offer_id': '123', 'stock': 5},
+            {'offer_id': '456', 'stock': 100}
+        ], [
+            {'offer_id': '123', 'stock': 5},
+            {'offer_id': '456', 'stock': 100}
+        ])
+
+        >>> upload_stocks(
+        >>>     [{"Code": "123", "Stock": "5"},
+        >>>      {"Код": "456", "Stock": "10+"}],
+        >>>     123,
+        >>>     456
+        >>> )
+        # Вы можете увидеть ошибку BadRequest в терминале.
+    """
     offer_ids = get_offer_ids(client_id, seller_token)
     stocks = create_stocks(watch_remnants, offer_ids)
     for some_stock in list(divide(stocks, 100)):
@@ -159,6 +409,13 @@ async def upload_stocks(watch_remnants, client_id, seller_token):
 
 
 def main():
+    """
+    Главная функция для выполнения операций
+    с остатками и ценами на платформе Озон.
+
+    Example:
+        main()
+    """
     env = Env()
     seller_token = env.str("SELLER_TOKEN")
     client_id = env.str("CLIENT_ID")
