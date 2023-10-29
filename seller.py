@@ -24,8 +24,8 @@ def get_product_list(last_id, client_id, seller_token):
         list: Список товаров.
 
     Raises:
-        requests.exceptions.HTTPError: Если во время запроса
-        возникает ошибка HTTP.
+        requests.exceptions.HTTPError: В случае возникновения HTTP-ошибки
+        во время запроса.
 
     Examples:
         >>> get_product_list("last123", "client123", "token123")
@@ -65,8 +65,8 @@ def get_offer_ids(client_id, seller_token):
         list: Список артикулов товаров.
 
     Raises:
-        requests.exceptions.HTTPError: Если во время запроса
-        возникает ошибка HTTP.
+        requests.exceptions.HTTPError: В случае возникновения HTTP-ошибки
+        во время запроса.
 
     Examples:
         >>> get_offer_ids("client123", "token123")
@@ -103,8 +103,8 @@ def update_price(prices: list, client_id, seller_token):
         dict: Результат операции.
 
     Raises:
-        requests.exceptions.HTTPError: Если во время запроса
-        возникает ошибка HTTP.
+        requests.exceptions.HTTPError: В случае возникновения HTTP-ошибки
+        во время запроса.
 
     Examples:
         >>> update_price([{"price": "5990", "offer_id": "123"}],
@@ -137,9 +137,8 @@ def update_stocks(stocks: list, client_id, seller_token):
         dict: Результат операции.
 
     Raises:
-        requests.exceptions.HTTPError: Если во время запроса
-        возникает ошибка HTTP.
-
+        requests.exceptions.HTTPError: В случае возникновения HTTP-ошибки
+        во время запроса.
     Examples:
         >>> update_price([{"price": "5990", "offer_id": "123"}],
         >>>     "client123", "token123")
@@ -166,8 +165,8 @@ def download_stock():
         list: Список остатков часов.
 
     Raises:
-        requests.exceptions.HTTPError: Если во время запроса
-        возникает ошибка HTTP.
+        requests.exceptions.HTTPError: В случае возникновения HTTP-ошибки
+        во время запроса.
 
     Examples:
         >>> download_stock()
@@ -409,13 +408,6 @@ async def upload_stocks(watch_remnants, client_id, seller_token):
 
 
 def main():
-    """
-    Главная функция для выполнения операций
-    с остатками и ценами на платформе Озон.
-
-    Example:
-        main()
-    """
     env = Env()
     seller_token = env.str("SELLER_TOKEN")
     client_id = env.str("CLIENT_ID")
